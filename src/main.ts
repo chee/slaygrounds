@@ -62,6 +62,7 @@ import { TypescriptWorker } from "./worker/typescript.ts"
 
 import { tsxLanguage } from "@codemirror/lang-javascript"
 import { BundleWorker } from "./worker/bundle.ts"
+import erudaURL from "eruda/eruda.js?url"
 
 const repo = new Repo({
   network: [new WebSocketClientAdapter("wss://galaxy.observer")],
@@ -105,7 +106,13 @@ const iframe = document.querySelector("iframe")!
 function mksrcdoc(text: string) {
   const importmap = document.head.querySelector("script[type='importmap']")
     ?.outerHTML
-  return `<!doctype html><meta charset="utf-8">${importmap}<div id="app"></div><script type="module">${text}</script>`
+  return /* html */ `<!doctype html>
+<meta charset="utf-8">
+${importmap}
+<div id="app"></div>
+<script type="module">${text}</script>
+<script src="${erudaURL}"></script>
+<script>eruda.init({useShadowDom: false}); eruda.show()</script>`
 }
 
 let timer = setTimeout(() => {})
