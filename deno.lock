@@ -42,7 +42,7 @@
     "@automerge/automerge-codemirror@0.1.0": {
       "integrity": "sha512-9mQ7aecSlwYOGndAjLbgNk0uOJeKZdxmVNAgllf0SvsBXfeKcbf+NnvhJmRdNYY7CR4AtAw7W++Ew7t1PYs9RQ==",
       "dependencies": [
-        "@automerge/automerge@2.2.9",
+        "@automerge/automerge",
         "@codemirror/state",
         "@codemirror/view",
         "codemirror"
@@ -82,7 +82,7 @@
     "@automerge/automerge-repo@2.0.7": {
       "integrity": "sha512-mesv+b5KfN3L1pQCgy2yjhC3Yvg9FttzaFdbDCQ7p/Eed44npPByiB4TXHOzf2tlehAjBB7V5ruejxCRB3NAzQ==",
       "dependencies": [
-        "@automerge/automerge@2.2.9",
+        "@automerge/automerge",
         "bs58check",
         "cbor-x",
         "debug",
@@ -90,12 +90,6 @@
         "fast-sha256",
         "uuid",
         "xstate"
-      ]
-    },
-    "@automerge/automerge@2.2.9": {
-      "integrity": "sha512-6HM52Ops79hAQBWMg/t0MNfGOdEiXyenQjO9F1hKZq0RWDsMLpPa1SzRy/C4/4UyX67sTHuA5CwBpH34SpfZlA==",
-      "dependencies": [
-        "uuid"
       ]
     },
     "@automerge/automerge@3.0.0-beta.4": {
