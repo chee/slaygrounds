@@ -39,7 +39,9 @@
     "thememirror": "npm:thememirror@^2.0.1",
     "typescript": "npm:typescript@^5.8.3",
     "vite": "npm:vite@^6.1.1",
-    "vite-plugin-wasm": "npm:vite-plugin-wasm@^3.4.1"
+    "vite-plugin-pwa": "npm:vite-plugin-pwa@^1.0.0",
+    "vite-plugin-wasm": "npm:vite-plugin-wasm@^3.4.1",
+    "workbox-window": "npm:workbox-window@^7.3.0"
   },
   "nodeModulesDir": "auto"
 }

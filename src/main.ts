@@ -64,6 +64,12 @@ import { tsxLanguage } from "@codemirror/lang-javascript"
 import { BundleWorker } from "./worker/bundle.ts"
 import erudaURL from "eruda/eruda.js?raw"
 import defaultContent from "./default.js"
+import { registerSW } from "virtual:pwa-register"
+const updateSW = registerSW({
+  onNeedRefresh() {
+    updateSW(true)
+  },
+})
 
 const repo = new Repo({
   network: [new WebSocketClientAdapter("wss://galaxy.observer")],

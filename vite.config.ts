@@ -1,9 +1,21 @@
 import { defineConfig } from "vite"
 import deno from "@deno/vite-plugin"
 import wasm from "vite-plugin-wasm"
+import { VitePWA as pwa } from "vite-plugin-pwa"
 
 export default defineConfig({
-  plugins: [deno(), wasm()],
+  plugins: [
+    deno(),
+    wasm(),
+    pwa({
+      workbox: {
+        globPatterns: ["**/*"],
+      },
+      devOptions: {
+        enabled: true,
+      },
+    }),
+  ],
   worker: {
     format: "es",
     plugins: () => [deno(), wasm()],
