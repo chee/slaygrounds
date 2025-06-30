@@ -1,23 +1,12 @@
-const SERVICE_WORKER_VERSION = "e"
+const SERVICE_WORKER_VERSION = "f"
 
-const addResourcesToCache = async (resources) => {
-  const cache = await caches.open(SERVICE_WORKER_VERSION)
-  await cache.addAll(resources)
-}
-
-self.addEventListener("activate", (event) => {
-	event.waitUntil(
-    caches.keys().then(cacheNames =>
-      Promise.all(
-        cacheNames
-          .filter(name => name !== SERVICE_WORKER_VERSION)
-          .map(name => caches.delete(name))
-      )
-    )
-})
+// const addResourcesToCache = async (resources) => {
+// const cache = await caches.open(SERVICE_WORKER_VERSION)
+// await cache.addAll(resources)
+// }
 
 self.addEventListener("install", (event) => {
-	self.skipWaiting()
+  self.skipWaiting()
 })
 
 const putInCache = async (request, response) => {
