@@ -8,6 +8,7 @@ export default defineConfig({
     deno(),
     wasm(),
     pwa({
+      filename: "service-worker.js",
       workbox: {
         globPatterns: ["**/*"],
         maximumFileSizeToCacheInBytes: 22 * 1024 * 1024,
