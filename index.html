@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
+
 <div id="playground">
 	<article class="code"></article>
 	<button class="handle"></button>
@@ -50,8 +51,7 @@
 			})
 		}
 	}
-
-	location.hostname === "localhost" || registerServiceWorker()
+ registerServiceWorker()
 </script>
 <script type="module" src="/src/panes.ts"></script>
 <script type="module" src="/src/main.ts"></script>

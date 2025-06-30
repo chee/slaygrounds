@@ -62,7 +62,7 @@ import { TypescriptWorker } from "./worker/typescript.ts"
 
 import { tsxLanguage } from "@codemirror/lang-javascript"
 import { BundleWorker } from "./worker/bundle.ts"
-import erudaURL from "eruda/eruda.js?url"
+import erudaURL from "eruda/eruda.js?raw"
 import defaultContent from "./default.js"
 
 const repo = new Repo({
@@ -112,15 +112,22 @@ function mksrcdoc(text: string) {
 ${importmap}
 <div id="app"></div>
 <script type="module">${text}</script>
-<script src="${erudaURL}"></script>
+<script>
+${erudaURL}
+</script>
 <script>eruda.init({useShadowDom: false}); eruda.show()</script>`
 }
 
 let timer = setTimeout(() => {})
 
+const encoder = new TextEncoder()
 async function update() {
   const result = await bundleWorker.bundle(handle!.doc())
-  iframe.srcdoc = mksrcdoc(result.outputFiles?.[0]?.text ?? "")
+  const srcdoc = mksrcdoc(result.outputFiles?.[0]?.text ?? "")
+  const uint8array = encoder.encode(srcdoc)
+  const blob = new Blob([uint8array], { type: "text/html" })
+  const url = URL.createObjectURL(blob)
+  iframe.src = url
 }
 update()
 

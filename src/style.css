@@ -9,12 +9,16 @@
 body {
 	margin: 0;
 	overflow: hidden;
+	height: 100dvh;
+	width: 100dvw;
+	display: flex;
+	flex-direction: column;
 }
 
 #playground {
 	display: flex;
-	height: 100dvh;
-	width: 100dvw;
+	height: 100%;
+	width: 100%;
 	overflow: hidden;
 	&[contenteditable], .cm-focused {
 		outline: 0;
@@ -30,7 +34,6 @@ body {
 	}
 	.handle {
 		background: transparent;
-		border: 1px solid pink;
 		cursor: col-resize;
 		transition: background .4s;
 		width: 1px;
@@ -163,4 +166,15 @@ body {
 	width: 100%;
 	overflow: scroll;
 	font-size: 0.8rem;
+}
+
+.handle {
+	border: 0;
+	border-left: 1px solid black;
+}
+
+@media (prefers-color-scheme: dark) {
+	.handle {
+		border-left: 1px solid white;
+	}
 }
