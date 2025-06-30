@@ -1,4 +1,4 @@
-const SERVICE_WORKER_VERSION = "a"
+const SERVICE_WORKER_VERSION = "b"
 
 const addResourcesToCache = async (resources) => {
   const cache = await caches.open(SERVICE_WORKER_VERSION)

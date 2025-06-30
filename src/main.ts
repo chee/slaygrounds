@@ -63,6 +63,7 @@ import { TypescriptWorker } from "./worker/typescript.ts"
 import { tsxLanguage } from "@codemirror/lang-javascript"
 import { BundleWorker } from "./worker/bundle.ts"
 import erudaURL from "eruda/eruda.js?url"
+import defaultContent from "./default.js"
 
 const repo = new Repo({
   network: [new WebSocketClientAdapter("wss://galaxy.observer")],
@@ -84,7 +85,7 @@ if (location.hash) {
 if (!handle) {
   handle = repo.create({
     meta: {},
-    src: { "entry.tsx": "function x() {}" },
+    src: { "entry.tsx": defaultContent },
   })
   history.replaceState({}, "", `#${handle.url}/entry.tsx`)
 }
