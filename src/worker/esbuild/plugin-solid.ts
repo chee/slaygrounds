@@ -8,7 +8,7 @@ export function solid(options: {
   jsxImportSource?: string
 }): EsbuildPlugin {
   return {
-    name: "littlebook:solid",
+    name: "cheerabbits:solid",
     setup(build) {
       build.onLoad({ filter: /\.(t|j)sx$/ }, async (args) => {
         const isTypescript = args.path.endsWith(".tsx")

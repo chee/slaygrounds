@@ -19,7 +19,7 @@ const typescriptWorker = Comlink.wrap(
   typescriptWorkerProgram,
 ) as TypescriptWorker
 const codemirrorTsWorker = typescriptWorker.tsWorker as unknown as WorkerShape
-codemirrorTsWorker.initialize()
+
 const bundleWorkerProgram = new Worker(
   new URL("./worker/bundle.ts", import.meta.url),
   { type: "module" },
@@ -142,6 +142,7 @@ handle.on("change", () => {
   timer = setTimeout(update, 500)
 })
 
+await codemirrorTsWorker.initialize()
 const view = new EditorView({
   doc: handle.doc().src["entry.tsx"],
   parent: document.querySelector(".code")!,

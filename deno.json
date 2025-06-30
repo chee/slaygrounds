@@ -3,7 +3,7 @@
     "dev": "vite",
     "mk": "vite build",
     "preview": "vite preview",
-    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/"
+    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server output/"
   },
   "fmt": {
     "semiColons": false

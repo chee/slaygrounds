@@ -2,7 +2,7 @@ import esbuild from "./esbuild/bundle.ts"
 import { Project } from "../shape.ts"
 import { expose, Remote } from "comlink"
 
-export async function bundle(project: Project) {
+export function bundle(project: Project) {
   return esbuild(project)
 }
 
