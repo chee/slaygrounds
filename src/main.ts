@@ -243,6 +243,13 @@ const map = {
 
 const javascriptFilenameRegex = /\.(m|c)?(t|j)sx?$/
 
+const filenameForm = document.getElementById("filename-form") as HTMLFormElement
+const filenameInput = document.getElementById("filename") as HTMLInputElement
+filenameForm.addEventListener("submit", (event) => {
+  event.preventDefault()
+  location.hash = getAutomergeUrlFromURL(getURL()!) + "/" + filenameInput.value
+})
+
 function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
   if (!get(opts.handle.doc(), opts.path)) {
     opts.handle.change((doc) => {
@@ -272,6 +279,8 @@ function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
   ]
 
   const filename = opts.path[opts.path.length - 1]
+  console.log({ filename, filenameInput })
+  filenameInput.value = filename
 
   const ext = filename.split(".")[1] as keyof typeof map
   const lang = map[ext]

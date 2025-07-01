@@ -8,10 +8,16 @@
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    <div id="playground">
-      <article class="code"></article>
-      <button class="handle"></button>
-      <iframe class="preview"></iframe>
+    <header></header>
+    <div id="playground" class="pane-container">
+      <section class="pane-left">
+        <article class="code"></article>
+        <form id="filename-form">
+          <input type="text" id="filename"><button>go</button>
+        </form>
+      </section>
+      <button class="pane-handle"></button>
+      <iframe class="pane-right preview"></iframe>
     </div>
     <script type="module" src="/src/panes.ts"></script>
     <script type="module" src="/src/main.ts"></script>

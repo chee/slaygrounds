@@ -1,6 +1,6 @@
-const handle = document.querySelector(".handle")! as HTMLButtonElement
-const left = document.querySelector(".code")! as HTMLDivElement
-const container = document.querySelector("#playground")! as HTMLDivElement
+const handle = document.querySelector(".pane-handle")! as HTMLButtonElement
+const left = document.querySelector(".pane-left")! as HTMLDivElement
+const container = document.querySelector(".pane-container")! as HTMLDivElement
 
 const initial = localStorage.getItem("playground:left") ?? `0 0 50%`
 left.style.flex = initial
