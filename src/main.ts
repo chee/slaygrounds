@@ -112,8 +112,13 @@ if (location.hash) {
 }
 
 const headmap = () =>
-  document.head.querySelector("script[type='importmap']")
-    ?.innerHTML ?? ""
+  `{
+	"imports": {
+		"solid-js": "https://esm.sh/solid-js",
+		"solid-js/web": "https://esm.sh/solid-js/web"
+	}
+}
+`
 
 if (!handle) {
   handle = repo.create({
@@ -151,7 +156,7 @@ darkmatch.addEventListener("change", () => {
 const iframe = document.querySelector("iframe")!
 
 function mksrcdoc(inline: string) {
-  const importmap = handle!.doc().src["importmap.json"] ?? headmap()
+  const importmap = handle!.doc().src["importmap.json"] || headmap()
   return /* html */ `<!doctype html>
 <meta charset="utf-8">
 <script type="importmap">
