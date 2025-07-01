@@ -280,21 +280,24 @@ function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
 
   const filename = opts.path[opts.path.length - 1]
   console.log({ filename, filenameInput })
-  filenameInput.value = filename
+  filenameInput.value = opts.path.slice(1).join("/")
 
-  const ext = filename.split(".")[1] as keyof typeof map
-  const lang = map[ext]
+  const ext = filename.split(".")?.[1] as keyof typeof map | undefined
+  const lang = ext && map[ext]
+
+  const isJS = javascriptFilenameRegex.exec(filename) ||
+    filename == "jsx-runtime"
 
   {
     return new EditorView({
-      doc: get(opts.handle.doc(), opts.path),
+      doc: get(opts.handle.doc(), opts.path) || "",
+      // doc: "",
       parent: document.querySelector(".code")!,
       extensions: [
-        javascriptFilenameRegex.exec(filename) ? tsExtensions : [],
-        lang ?? [],
+        isJS ? tsExtensions : [],
+        lang ?? isJS ? tsxLanguage : [],
         minimalSetup,
         automergeSyncPlugin(opts),
-        tsxLanguage,
         indentUnit.of("\t"),
         search(),
         highlightSpecialChars(),
@@ -320,7 +323,6 @@ function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
           },
         }),
         themeCompartment.of(getSchemeTheme()),
-        tsExtensions,
       ],
     })
   }

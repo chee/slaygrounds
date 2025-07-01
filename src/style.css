@@ -4,6 +4,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --code-font: "Fantasque Sans Mono", "Iosevka", monospace;
+}
+
+* {
+  font-family: var(--code-font);
 }
 
 body {
@@ -61,12 +66,22 @@ body {
 }
 .pane-handle {
   border: 0;
-  border-left: 1px solid black;
+  border-left: 1px solid var(--divider);
+}
+
+:root {
+  --divider: #b7a9bc;
+}
+
+@media (prefers-color-scheme: light) {
+  background: var(--lychee-bg);
 }
 
 @media (prefers-color-scheme: dark) {
-  .pane-handle {
-    border-left: 1px solid white;
+  form,
+  form * {
+    background: black;
+    color: white;
   }
 }
 
@@ -184,4 +199,21 @@ body {
   width: 100%;
   overflow: scroll;
   font-size: 0.8rem;
+}
+
+form {
+  border-top: 1px solid var(--divider);
+  display: flex;
+  input {
+    width: 100%;
+    border: 0;
+    padding: 0.5rem;
+  }
+  button {
+    background: transparent;
+    border: 0;
+    color: transparent;
+    width: 0;
+    padding: 0;
+  }
 }

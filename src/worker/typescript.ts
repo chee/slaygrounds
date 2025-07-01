@@ -10,8 +10,10 @@ import fsMap from "./libmap/_map.ts"
 import type { Remote } from "comlink"
 import { AutomergeUrl } from "@automerge/vanillajs"
 import { Project } from "../shape.ts"
+import { walkies } from "./babel/walk-imports.ts"
+import { fetchXTypescriptTypes } from "./types/x-typescript-types.ts"
+import { cd } from "./util/path.ts"
 
-// import { walkImportsAndRequires } from "./babel/walk-imports.ts"
 // import { fetchXTypescriptTypes as fetchXTypescriptTypes } from "./types/x-typescript-types.ts"
 
 const compilerOptions = {
@@ -57,36 +59,35 @@ const typescriptATA = setupTypeAcquisition({
   },
 })
 
-const files = new Map<string, string>()
+const files = {}
 
 const javascriptFilenameRegex = /\.(m|c)?(t|j)sx?$/
 
-function ata(code: string, filePath: string) {
+function ata(code: string, filePath: string, skip = false) {
   if (!javascriptFilenameRegex.test(filePath)) {
     return
   }
-
   typescriptATA(code)
 
-  // walkImportsAndRequires(parse(code), (identifier, nodePath) => {
-  // console.log(identifier)
-  // const env = typescriptWorker.getEnv()
-  // if (identifier.startsWith(".")) {
-  // const fullPath = cd(filePath, identifier);
-  // const content = await getRelativeImportContent(fullPath);
-  // content && env.createFile(fullPath, content);
-  // } else if (identifier.startsWith("https://")) {
-  // const content = await fetchXTypescriptTypes(identifier, files)
-  // if (!content) return
-
-  // for (const [path, code] of content.entries()) {
-  // env.createFile(
-  // `/node_modules/${path}/index.d.ts`,
-  // `declare module "${path}" {${code}}`,
-  // )
-  // }
-  // ;      }
-  // })
+  if (!skip) {
+    const imports = walkies(code)
+    vfs.then(async (env) => {
+      for (const spec of imports) {
+        if (spec.startsWith("https://")) {
+          fetchXTypescriptTypes(spec, files).then((content) => {
+            if (content) {
+              for (const [path, code] of Object.entries(content)) {
+                env.createFile(
+                  `/node_modules/${path}/index.d.ts`,
+                  `declare module "${path}" {${code}}`,
+                )
+              }
+            }
+          })
+        }
+      }
+    })
+  }
 }
 
 const typescriptWorker = {

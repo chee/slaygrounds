@@ -3,7 +3,16 @@ import type { Plugin } from "esbuild-wasm"
 
 export default function virtual(modules: Record<string, string>): Plugin {
   const resolvedIds = new Map<string, string>(Object.entries(modules))
-
+  const tryExts = [
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    "/index.ts",
+    "/index.tsx",
+    "/index.js",
+    "/index.jsx",
+  ]
   return {
     name: "virtual",
     setup(build) {
@@ -19,6 +28,13 @@ export default function virtual(modules: Record<string, string>): Plugin {
           return { path: resolved, namespace: "virtual-file-system" }
         }
 
+        for (const ext of tryExts) {
+          const extended = join(dirname(args.importer), `${args.path}${ext}`)
+          if (resolvedIds.has(extended)) {
+            return { path: extended, namespace: "virtual-file-system" }
+          }
+        }
+
         return null
       })
 
@@ -26,7 +42,9 @@ export default function virtual(modules: Record<string, string>): Plugin {
         { filter: /.*/, namespace: "virtual-file-system" },
         (args) => {
           const id = args.path
+
           const contents = modules[id] ?? resolvedIds.get(id)
+
           if (contents != null) {
             return { contents, loader: "default" }
           }
