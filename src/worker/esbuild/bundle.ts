@@ -8,15 +8,23 @@ import { eternal } from "./plugin-dynamic-external.ts"
 import { fileTreeToVirtualFileSystem } from "./virtual.ts"
 import { Project } from "../../shape.ts"
 
+let doing = false
 let done = false
 async function initializeEsbuild() {
-  if (done) return
+  if (doing || done) return
+  doing = true
   await esbuild.initialize({ wasmURL: esbuildWasm })
   done = true
 }
 
-export default async function bundle(doc: Project, prefix = "") {
+export default async function bundle(
+  doc: Project,
+  prefix: string,
+): Promise<esbuild.BuildResult> {
   await initializeEsbuild()
+  if (!done) {
+    throw new Error("trying to bundle before init")
+  }
   const virtualFileSystem = fileTreeToVirtualFileSystem(
     doc.src,
     prefix,
@@ -28,13 +36,13 @@ export default async function bundle(doc: Project, prefix = "") {
     : undefined
 
   const build = await esbuild.build({
-    entryPoints: [`${prefix.endsWith("/") ? prefix : prefix + "/"}${entry}`],
+    entryPoints: [`${prefix}/${entry}`],
     bundle: true,
     minify: false,
     sourcemap: "inline",
     format: "esm",
     treeShaking: true,
-    loader: { ".css": "text" },
+    // loader: { ".css": "text" },
     plugins: [
       solid({ files: virtualFileSystem, jsxImportSource }),
       eternal,

@@ -11,20 +11,25 @@
     "npm:@babel/types@^7.27.7": "7.27.7",
     "npm:@codemirror/autocomplete@^6.18.6": "6.18.6",
     "npm:@codemirror/commands@^6.8.1": "6.8.1",
+    "npm:@codemirror/lang-css@^6.3.1": "6.3.1",
     "npm:@codemirror/lang-javascript@^6.2.4": "6.2.4",
+    "npm:@codemirror/lang-json@^6.0.2": "6.0.2",
     "npm:@codemirror/language@^6.11.2": "6.11.2",
     "npm:@codemirror/search@^6.5.11": "6.5.11",
     "npm:@codemirror/state@^6.5.2": "6.5.2",
     "npm:@codemirror/view@^6.38.0": "6.38.0",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__picomatch@4.0.2",
     "npm:@lezer/highlight@^1.2.1": "1.2.1",
+    "npm:@sveltejs/acorn-typescript@^1.0.5": "1.0.5_acorn@8.15.0",
     "npm:@typescript/ata@~0.9.8": "0.9.8_typescript@5.8.3",
     "npm:@typescript/vfs@^1.6.1": "1.6.1_typescript@5.8.3",
     "npm:@valtown/codemirror-ts@3.0.0-14": "3.0.0-14_@codemirror+autocomplete@6.18.6_@codemirror+lint@6.8.5_@codemirror+state@6.5.2_@codemirror+view@6.38.0",
+    "npm:acorn@^8.15.0": "8.15.0",
     "npm:codemirror@^6.0.2": "6.0.2",
     "npm:comlink@^4.4.2": "4.4.2",
     "npm:eruda@^3.4.3": "3.4.3",
     "npm:esbuild-wasm@~0.25.5": "0.25.5",
+    "npm:estree-walker@^3.0.3": "3.0.3",
     "npm:thememirror@^2.0.1": "2.0.1_@codemirror+language@6.11.2_@codemirror+state@6.5.2_@codemirror+view@6.38.0",
     "npm:typescript@^5.8.3": "5.8.3",
     "npm:vite-plugin-pwa@1": "1.0.0_vite@6.3.5__picomatch@4.0.2_workbox-build@7.3.0__ajv@8.17.1__@babel+core@7.27.7__rollup@2.79.2_workbox-window@7.3.0",
@@ -915,6 +920,16 @@
         "@lezer/common"
       ]
     },
+    "@codemirror/lang-css@6.3.1": {
+      "integrity": "sha512-kr5fwBGiGtmz6l0LSJIbno9QrifNMUusivHbnA1H6Dmqy4HZFte3UAICix1VuKo0lMPKQr2rqB+0BkKi/S3Ejg==",
+      "dependencies": [
+        "@codemirror/autocomplete",
+        "@codemirror/language",
+        "@codemirror/state",
+        "@lezer/common",
+        "@lezer/css"
+      ]
+    },
     "@codemirror/lang-javascript@6.2.4": {
       "integrity": "sha512-0WVmhp1QOqZ4Rt6GlVGwKJN3KW7Xh4H2q8ZZNGZaP6lRdxXJzmjm4FqvmOojVj6khWJHIb9sp7U/72W7xQgqAA==",
       "dependencies": [
@@ -925,6 +940,13 @@
         "@codemirror/view",
         "@lezer/common",
         "@lezer/javascript"
+      ]
+    },
+    "@codemirror/lang-json@6.0.2": {
+      "integrity": "sha512-x2OtO+AvwEHrEwR0FyyPtfDUiloG3rnVTSZV1W8UteaLL8/MajQd8DpvUb2YVzC+/T18aSDv0H9mu+xw0EStoQ==",
+      "dependencies": [
+        "@codemirror/language",
+        "@lezer/json"
       ]
     },
     "@codemirror/language@6.11.2": {
@@ -1130,6 +1152,14 @@
     "@lezer/common@1.2.3": {
       "integrity": "sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA=="
     },
+    "@lezer/css@1.2.1": {
+      "integrity": "sha512-2F5tOqzKEKbCUNraIXc0f6HKeyKlmMWJnBB0i4XW6dJgssrZO/YlZ2pY5xgyqDleqqhiNJ3dQhbrV2aClZQMvg==",
+      "dependencies": [
+        "@lezer/common",
+        "@lezer/highlight",
+        "@lezer/lr"
+      ]
+    },
     "@lezer/highlight@1.2.1": {
       "integrity": "sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==",
       "dependencies": [
@@ -1138,6 +1168,14 @@
     },
     "@lezer/javascript@1.5.1": {
       "integrity": "sha512-ATOImjeVJuvgm3JQ/bpo2Tmv55HSScE2MTPnKRMRIPx2cLhHGyX2VnqpHhtIV1tVzIjZDbcWQm+NCTF40ggZVw==",
+      "dependencies": [
+        "@lezer/common",
+        "@lezer/highlight",
+        "@lezer/lr"
+      ]
+    },
+    "@lezer/json@1.0.3": {
+      "integrity": "sha512-BP9KzdF9Y35PDpv04r0VeSTKDeox5vVr3efE7eBbx3r4s3oNLfunchejZhjArmeieBH+nVOpgIiBJpEAv8ilqQ==",
       "dependencies": [
         "@lezer/common",
         "@lezer/highlight",
@@ -1329,6 +1367,12 @@
         "string.prototype.matchall"
       ]
     },
+    "@sveltejs/acorn-typescript@1.0.5_acorn@8.15.0": {
+      "integrity": "sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==",
+      "dependencies": [
+        "acorn@8.15.0"
+      ]
+    },
     "@types/estree@0.0.39": {
       "integrity": "sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw=="
     },
@@ -1366,6 +1410,10 @@
     },
     "acorn@8.14.1": {
       "integrity": "sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==",
+      "bin": true
+    },
+    "acorn@8.15.0": {
+      "integrity": "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==",
       "bin": true
     },
     "ajv@8.17.1": {
@@ -1794,6 +1842,12 @@
     },
     "estree-walker@2.0.2": {
       "integrity": "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="
+    },
+    "estree-walker@3.0.3": {
+      "integrity": "sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==",
+      "dependencies": [
+        "@types/estree@1.0.8"
+      ]
     },
     "esutils@2.0.3": {
       "integrity": "sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g=="
@@ -2641,7 +2695,7 @@
       "integrity": "sha512-+6erLbBm0+LROX2sPXlUYx/ux5PyE9K/a92Wrt6oA+WDAoFTdpHE5tCYCI5PNzq2y8df4rA+QgHLJuR4jNymsg==",
       "dependencies": [
         "@jridgewell/source-map",
-        "acorn",
+        "acorn@8.14.1",
         "commander",
         "source-map-support"
       ],
@@ -3046,6 +3100,15 @@
       "npm:vite-plugin-wasm@^3.4.1",
       "npm:vite@^6.1.1",
       "npm:workbox-window@^7.3.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@codemirror/lang-css@^6.3.1",
+        "npm:@codemirror/lang-json@^6.0.2",
+        "npm:@sveltejs/acorn-typescript@^1.0.5",
+        "npm:acorn@^8.15.0",
+        "npm:estree-walker@^3.0.3"
+      ]
+    }
   }
 }

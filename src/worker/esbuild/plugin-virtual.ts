@@ -8,7 +8,7 @@ export default function virtual(modules: Record<string, string>): Plugin {
     name: "virtual",
     setup(build) {
       build.onResolve({ filter: /.*/ }, (args) => {
-        const id = args.path.replace("./", "")
+        const id = args.path.replace(/^\.{1,2}?\//, "/")
 
         if (id in modules) {
           return { path: id, namespace: "virtual-file-system" }

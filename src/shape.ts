@@ -1,4 +1,4 @@
 export interface Project {
-  meta: Record<string, string>
+  meta: Record<string, any>
   src: Record<string, string>
 }

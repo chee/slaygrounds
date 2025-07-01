@@ -7,9 +7,10 @@ import ts from "typescript"
 import { createWorker } from "@valtown/codemirror-ts/worker"
 import { setupTypeAcquisition } from "@typescript/ata"
 import fsMap from "./libmap/_map.ts"
-
 import type { Remote } from "comlink"
 import { AutomergeUrl } from "@automerge/vanillajs"
+import { Project } from "../shape.ts"
+
 // import { walkImportsAndRequires } from "./babel/walk-imports.ts"
 // import { fetchXTypescriptTypes as fetchXTypescriptTypes } from "./types/x-typescript-types.ts"
 
@@ -27,7 +28,7 @@ const compilerOptions = {
 } as ts.CompilerOptions
 
 const vfs = (async function () {
-  // await Automerge.initializeBase64Wasm(automergeWasmBase64);
+  // await
   const system = createSystem(fsMap)
   const vfs = createVirtualTypeScriptEnvironment(
     system,
@@ -67,7 +68,8 @@ function ata(code: string, filePath: string) {
 
   typescriptATA(code)
 
-  // walkImportsAndRequires(code, async (identifier, nodePath) => {
+  // walkImportsAndRequires(parse(code), (identifier, nodePath) => {
+  // console.log(identifier)
   // const env = typescriptWorker.getEnv()
   // if (identifier.startsWith(".")) {
   // const fullPath = cd(filePath, identifier);
@@ -91,6 +93,19 @@ const typescriptWorker = {
   tsWorker: codemirrorTsWorker,
   ata(code: string, filePath: string) {
     ata(code, filePath)
+  },
+  async load(url: AutomergeUrl, src: Project["src"]) {
+    const env = await vfs
+    for (const name in src) {
+      if (!javascriptFilenameRegex.test(name)) {
+        continue
+      }
+      const code = src[name]
+      if (typeof code == "string") {
+        env.createFile(`/${url}/${name}`, src[name])
+        typescriptATA(code)
+      }
+    }
   },
 }
 

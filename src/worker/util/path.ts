@@ -1,20 +1,8 @@
 import type { DocHandle, Prop } from "@automerge/vanillajs"
 import type { Doc } from "@automerge/automerge"
-import type { LittlebookPluginShape } from "./shapes.ts"
 
-export type LBPSrcPath = ["src", ...Prop[]]
-export type LBPSrcFilePath = ["src", ...Prop[], string]
-
-export function getTypescriptEnvPath({
-  handle,
-  path,
-}: {
-  handle: DocHandle<LittlebookPluginShape>
-  path: LBPSrcFilePath
-}) {
-  const automerge = handle.url
-  return `/${automerge}/${path.join("/")}`
-}
+export type SrcPath = ["src", ...Prop[]]
+export type SrcFilePath = ["src", ...Prop[], string]
 
 export function getExtension({ path }: { path: Prop[] }) {
   const last = path[path.length - 1]
