@@ -139,6 +139,10 @@ function getPathFromURL(url: URL | null) {
   if (!url) return []
   return ["src"].concat(url?.pathname.split("/").slice(1) ?? [])
 }
+function getCurrentFilename() {
+  const path = getPathFromURL(getURL())
+  return path.slice(1).join("/")
+}
 let path = getPathFromURL(url)
 
 const themeCompartment = new Compartment()
@@ -226,7 +230,15 @@ function set(obj: any, path: (string | number)[], value: any): void {
     return current[key]
   }, obj)
 
-  target[lastKey] = value
+  if (value === undefined) {
+    delete target[lastKey]
+  } else {
+    target[lastKey] = value
+  }
+}
+
+function del(obj: any, path: (string | number)[]): void {
+  set(obj, path, undefined)
 }
 
 await codemirrorTsWorker.initialize()
@@ -242,13 +254,80 @@ const map = {
 }
 
 const javascriptFilenameRegex = /\.(m|c)?(t|j)sx?$/
+const filenamesListElement = document.querySelector("#files")!
 
-const filenameForm = document.getElementById("filename-form") as HTMLFormElement
-const filenameInput = document.getElementById("filename") as HTMLInputElement
-filenameForm.addEventListener("submit", (event) => {
-  event.preventDefault()
-  location.hash = getAutomergeUrlFromURL(getURL()!) + "/" + filenameInput.value
+filenamesListElement.addEventListener("click", (event) => {
+  if (event.target instanceof HTMLButtonElement) {
+    const filename = event.target.textContent
+    location.hash = getAutomergeUrlFromURL(getURL()!) + "/" +
+      filename
+    renderFilenames(handle!)
+  }
 })
+
+filenamesListElement.addEventListener("dblclick", (event) => {
+  if (event.target instanceof HTMLButtonElement) {
+    const filename = event.target.textContent!
+    const newname = self.prompt("new name", filename!)
+    event.target.textContent = newname!
+    if (!newname) return
+    if (newname == filename) return
+    handle!.change((doc) => {
+      set(doc, ["src", newname], get(doc, ["src", filename]))
+      set(doc, ["src", filename], undefined)
+    })
+    location.hash = getAutomergeUrlFromURL(getURL()!) + "/" +
+      newname
+  }
+})
+
+filenamesListElement.addEventListener("contextmenu", (event) => {
+  if (event.target instanceof HTMLButtonElement) {
+    event.preventDefault()
+    const filename = event.target.textContent!
+    const yes = self.confirm(`delete ${filename}?`)
+    if (!yes) return
+    handle!.change((doc) => {
+      del(doc, ["src", filename])
+    })
+    console.log(
+      filename == getCurrentFilename(),
+      filename,
+      getCurrentFilename(),
+    )
+    if (filename == getCurrentFilename()) {
+      location.hash = getAutomergeUrlFromURL(getURL()!) + "/entry.tsx"
+    }
+
+    renderFilenames(handle!)
+  }
+})
+
+const newFilenameForm = document.getElementById(
+  "filename-form",
+) as HTMLFormElement
+const newFilenameInput = document.getElementById("filename") as HTMLInputElement
+newFilenameForm.addEventListener("submit", (event) => {
+  event.preventDefault()
+  const name = newFilenameInput.value
+  newFilenameInput.value = ""
+  location.hash = getAutomergeUrlFromURL(getURL()!) + "/" +
+    name
+  renderFilenames(handle!)
+  view.focus()
+})
+
+function renderFilenames(handle: DocHandle<Project>) {
+  const filenames = Array.from(Object.keys(handle.doc().src))
+  const currentFilename = getCurrentFilename()
+
+  filenamesListElement!.innerHTML = filenames.map((filename) =>
+    `<li><button aria-current="${
+      currentFilename == filename ? "page" : "false"
+    }">${filename}</button></li>`
+  ).join("")
+}
+renderFilenames(handle)
 
 function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
   if (!get(opts.handle.doc(), opts.path)) {
@@ -279,8 +358,6 @@ function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
   ]
 
   const filename = opts.path[opts.path.length - 1]
-  console.log({ filename, filenameInput })
-  filenameInput.value = opts.path.slice(1).join("/")
 
   const ext = filename.split(".")?.[1] as keyof typeof map | undefined
   const lang = ext && map[ext]

@@ -12,7 +12,6 @@ import { AutomergeUrl } from "@automerge/vanillajs"
 import { Project } from "../shape.ts"
 import { walkies } from "./babel/walk-imports.ts"
 import { fetchXTypescriptTypes } from "./types/x-typescript-types.ts"
-import { cd } from "./util/path.ts"
 
 // import { fetchXTypescriptTypes as fetchXTypescriptTypes } from "./types/x-typescript-types.ts"
 
@@ -43,7 +42,7 @@ const vfs = (async function () {
 
 const codemirrorTsWorker = createWorker({
   env: vfs,
-  async onFileUpdated(env, filePath, code) {
+  onFileUpdated(_env, filePath, code) {
     ata(code, filePath)
   },
 })
@@ -71,7 +70,7 @@ function ata(code: string, filePath: string, skip = false) {
 
   if (!skip) {
     const imports = walkies(code)
-    vfs.then(async (env) => {
+    vfs.then((env) => {
       for (const spec of imports) {
         if (spec.startsWith("https://")) {
           fetchXTypescriptTypes(spec, files).then((content) => {

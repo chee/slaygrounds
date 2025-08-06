@@ -1,25 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-CA">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>slaygrounds</title>
-    <link rel="stylesheet" href="/src/style.css">
-  </head>
-  <body>
-    <header></header>
-    <div id="playground" class="pane-container">
-      <section class="pane-left">
-        <article class="code"></article>
-        <form id="filename-form">
-          <input type="text" id="filename"><button>go</button>
-        </form>
-      </section>
-      <button class="pane-handle"></button>
-      <iframe class="pane-right preview"></iframe>
-    </div>
-    <script type="module" src="/src/panes.ts"></script>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>slaygrounds</title>
+        <link rel="stylesheet" href="/src/style.css" />
+    </head>
+    <body>
+        <header></header>
+        <div id="playground" class="pane-container">
+            <section class="pane-left">
+                <article class="code"></article>
+                <footer>
+                    <ul id="files">
+                        <li><button aria-current="page">entry.tsx</button></li>
+                        <li><button>importmap.json</button></li>
+                    </ul>
+                    <form id="filename-form">
+                        <input
+                            type="text"
+                            id="filename"
+                            placeholder="new file"
+                            autocomplete="off"
+                        /><button>go</button>
+                    </form>
+                </footer>
+            </section>
+            <button class="pane-handle"></button>
+            <iframe class="pane-right preview"></iframe>
+        </div>
+        <script type="module" src="/src/panes.ts"></script>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>
