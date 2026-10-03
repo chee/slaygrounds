@@ -47,7 +47,7 @@ import {
   isValidAutomergeUrl,
   Sync,
 } from "./subduction.ts"
-import eruda from "eruda?raw"
+import erudaSource from "eruda?raw"
 import defaultContent from "./default.js"
 import { registerSW } from "virtual:pwa-register"
 const updateSW = registerSW({
@@ -150,6 +150,9 @@ darkmatch.addEventListener("change", () => {
 })
 
 const iframe = document.querySelector("iframe")!
+
+// inlined into a blob: url, a relative source map can only ever fail
+const eruda = erudaSource.replace(/\/\/# sourceMappingURL=\S+\s*$/, "")
 
 function mksrcdoc(inline: string) {
   const importmap = handle!.doc().src["importmap.json"] || headmap()

@@ -287,17 +287,46 @@ export class Sync {
     signer: Promise<Signer>,
     settle: (value?: unknown) => void,
   ) {
+    // browsers drop sockets without saying so (safari "suspends" them in
+    // background tabs), so we check for ourselves whenever the page comes
+    // back, the network comes back, or a while has passed
+    let nudge = Promise.withResolvers<void>()
+    const poke = () => nudge.resolve()
+    if (typeof globalThis.addEventListener == "function") {
+      globalThis.addEventListener("online", poke)
+      globalThis.addEventListener("pageshow", poke)
+    }
+    if (typeof document != "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState == "visible") poke()
+      })
+    }
+    const nap = (ms: number) =>
+      Promise.race([
+        new Promise<"slept">((yay) => setTimeout(yay, ms, "slept")),
+        nudge.promise.then(() => {
+          nudge = Promise.withResolvers<void>()
+          return "nudged" as const
+        }),
+      ])
+
     let backoff = 1000
     while (true) {
       try {
-        const closed = Promise.withResolvers<void>()
+        let closed = false
         const subduction = await this.subduction
         const socket = await SubductionWebSocket.tryDiscover(
           new URL(url),
           await signer,
           new URL(url).host,
-          () => closed.resolve(),
+          () => {
+            closed = true
+            poke()
+          },
         )
+        // before toTransport, which may hand the socket over to wasm
+        const peerId = socket.peerId
+        const peer = peerId.toString()
         await subduction.addConnection(socket.toTransport())
         this.#connected.add(url)
         backoff = 1000
@@ -305,15 +334,21 @@ export class Sync {
         // asking about everything again
         await Promise.all([...this.#entries.values()].map((e) => this.pull(e)))
         settle()
-        await closed.promise
+        while (!closed) {
+          await nap(15_000)
+          const peers = await subduction.getConnectedPeerIds()
+          if (!peers.some((p) => p.toString() == peer)) closed = true
+        }
         console.warn("disconnected from", url)
+        await subduction.disconnectFromPeer(peerId).catch(() => {})
       } catch (error) {
         console.warn("couldn't connect to", url, error)
       }
       this.#connected.delete(url)
       settle()
-      await new Promise((yay) => setTimeout(yay, backoff))
-      backoff = Math.min(backoff * 2, 30_000)
+      // coming back to the page is a good time to try again straight away
+      if (await nap(backoff) == "nudged") backoff = 1000
+      else backoff = Math.min(backoff * 2, 30_000)
     }
   }
 
