@@ -1,4 +1,5 @@
-import type { DocHandle, Prop } from "@automerge/vanillajs"
+import type { Prop } from "@automerge/automerge"
+import type { Handle as DocHandle } from "../../subduction.ts"
 import type { Doc } from "@automerge/automerge"
 
 export type SrcPath = ["src", ...Prop[]]

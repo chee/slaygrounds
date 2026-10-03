@@ -18,6 +18,10 @@ export default defineConfig({
       },
     }),
   ],
+  optimizeDeps: {
+    // it finds its wasm relative to import.meta.url, which prebundling breaks
+    exclude: ["@automerge/automerge-subduction"],
+  },
   worker: {
     format: "es",
     plugins: () => [deno(), wasm()],
@@ -33,6 +37,6 @@ export default defineConfig({
     sourcemap: true,
     minify: true,
     target: ["firefox137", "safari18", "esnext"],
-    rollupOptions: { jsx: "preserve" },
+    rolldownOptions: { transform: { jsx: "preserve" } },
   },
 })

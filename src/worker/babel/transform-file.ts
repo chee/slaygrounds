@@ -1,4 +1,4 @@
-import type {DocHandle} from "@automerge/vanillajs"
+import type { Handle as DocHandle } from "../../subduction.ts"
 import type {LittlebookPluginShape} from "../../shapes/shapes.ts"
 import * as babel from "@babel/standalone"
 import type {PluginItem as BabelPluginItem} from "@babel/core"

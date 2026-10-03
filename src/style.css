@@ -73,10 +73,6 @@ body {
     --divider: #b7a9bc;
 }
 
-@media (prefers-color-scheme: light) {
-    background: var(--lychee-bg);
-}
-
 @media (prefers-color-scheme: dark) {
     form,
     form * {

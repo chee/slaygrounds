@@ -23,14 +23,9 @@ import {
 import { autocompletion } from "@codemirror/autocomplete"
 
 import {
-  AutomergeUrl,
-  DocHandle,
-  IndexedDBStorageAdapter,
-  isValidAutomergeUrl,
-  Prop,
-  Repo,
-  WebSocketClientAdapter,
-} from "@automerge/vanillajs"
+  IndexedDbStorage,
+  WebCryptoSigner,
+} from "@automerge/automerge-subduction"
 import {
   EditorView,
   highlightActiveLine,
@@ -56,6 +51,12 @@ import {
 import { cssLanguage } from "@codemirror/lang-css"
 import { jsonLanguage } from "@codemirror/lang-json"
 import { BundleWorker } from "./worker/bundle.ts"
+import {
+  type AutomergeUrl,
+  type Handle,
+  isValidAutomergeUrl,
+  Sync,
+} from "./subduction.ts"
 import eruda from "eruda?raw"
 import defaultContent from "./default.js"
 import { registerSW } from "virtual:pwa-register"
@@ -80,9 +81,10 @@ const bundleWorkerProgram = new Worker(
 )
 const bundleWorker = Comlink.wrap(bundleWorkerProgram) as BundleWorker
 
-const repo = new Repo({
-  network: [new WebSocketClientAdapter("wss://galaxy.observer")],
-  storage: new IndexedDBStorageAdapter("playground"),
+const sync = new Sync({
+  signer: WebCryptoSigner.setup(),
+  storage: IndexedDbStorage.setup(indexedDB, "playground"),
+  servers: ["wss://galaxy.observer"],
 })
 
 function getURL() {
@@ -97,7 +99,7 @@ function getAutomergeUrlFromURL(url: URL | null) {
   return url ? url.protocol + url.pathname.split("/")[0] : null
 }
 
-let handle: DocHandle<Project> | undefined
+let handle: Handle<Project> | undefined
 
 out:
 if (location.hash) {
@@ -107,7 +109,7 @@ if (location.hash) {
   }
   const automergeUrl = getAutomergeUrlFromURL(url)
   if (isValidAutomergeUrl(automergeUrl)) {
-    handle = await repo.find<Project>(automergeUrl)
+    handle = await sync.find<Project>(automergeUrl)
   }
 }
 
@@ -121,7 +123,7 @@ const headmap = () =>
 `
 
 if (!handle) {
-  handle = repo.create({
+  handle = sync.create<Project>({
     meta: {},
     src: {
       "entry.tsx": defaultContent,
@@ -185,7 +187,7 @@ eruda.show()
 
 const encoder = new TextEncoder()
 
-async function getBundledCode(handle: DocHandle<Project>) {
+async function getBundledCode(handle: Handle<Project>) {
   const result = await bundleWorker.bundle(handle!.doc(), `/${handle!.url}`)
   return result?.outputFiles?.reduce((cont, file) => {
     if (file.path.endsWith(".js")) {
@@ -317,7 +319,7 @@ newFilenameForm.addEventListener("submit", (event) => {
   view.focus()
 })
 
-function renderFilenames(handle: DocHandle<Project>) {
+function renderFilenames(handle: Handle<Project>) {
   const filenames = Array.from(Object.keys(handle.doc().src))
   const currentFilename = getCurrentFilename()
 
@@ -329,7 +331,7 @@ function renderFilenames(handle: DocHandle<Project>) {
 }
 renderFilenames(handle)
 
-function createView(opts: { handle: DocHandle<Project>; path: string[] }) {
+function createView(opts: { handle: Handle<Project>; path: string[] }) {
   if (!get(opts.handle.doc(), opts.path)) {
     opts.handle.change((doc) => {
       set(doc, opts.path, "")
@@ -422,7 +424,7 @@ async function postbrowse() {
   const automergeUrl = getAutomergeUrlFromURL(url)
   if (automergeUrl != handle?.url) {
     handle?.off("change", updateSoon)
-    handle = await repo.find<Project>(automergeUrl)!
+    handle = await sync.find<Project>(automergeUrl)
     handle.on("change", updateSoon)
   }
   path = getPathFromURL(url)

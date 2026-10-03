@@ -1,4 +1,4 @@
-import type { DocHandle } from "@automerge/vanillajs"
+import type { Handle as DocHandle } from "../../subduction.ts"
 import esbuild from "esbuild-wasm"
 import esbuildWasm from "esbuild-wasm/esbuild.wasm?url"
 import esbuildVirtual from "./plugin-virtual.ts"
