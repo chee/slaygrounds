@@ -11,7 +11,8 @@ export default defineConfig({
       filename: "service-worker.js",
       workbox: {
         globPatterns: ["**/*"],
-        maximumFileSizeToCacheInBytes: 22 * 1024 * 1024,
+        // the typescript language server is a 49MB wasm
+        maximumFileSizeToCacheInBytes: 64 * 1024 * 1024,
       },
       devOptions: {
         enabled: true,

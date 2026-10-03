@@ -11,15 +11,6 @@ import {
   searchKeymap,
 } from "@codemirror/search"
 
-import {
-  tsAutocomplete,
-  tsFacet,
-  tsGoto,
-  tsHover,
-  tsLinter,
-  tsSync,
-  tsTwoslash,
-} from "@valtown/codemirror-ts"
 import { autocompletion } from "@codemirror/autocomplete"
 
 import {
@@ -37,10 +28,9 @@ import {
 } from "@codemirror/view"
 
 import { mod, modshift } from "./modshift.ts"
-import { WorkerShape } from "@valtown/codemirror-ts/worker"
 import { lycheeHighlightStyle, lycheeTheme } from "./lychee.ts"
 import { Project } from "./shape.ts"
-import { TypescriptWorker } from "./worker/typescript.ts"
+import { createLanguageClient, fileUri, languageId } from "./lsp.ts"
 
 import {
   javascriptLanguage,
@@ -66,14 +56,14 @@ const updateSW = registerSW({
   },
 })
 
-const typescriptWorkerProgram = new Worker(
-  new URL("./worker/typescript.ts", import.meta.url),
-  { type: "module" },
+const typescript = createLanguageClient(
+  new Worker(new URL("./worker/typescript.ts", import.meta.url), {
+    type: "module",
+  }),
+  (url) => {
+    location.hash = url
+  },
 )
-const typescriptWorker = Comlink.wrap(
-  typescriptWorkerProgram,
-) as TypescriptWorker
-const codemirrorTsWorker = typescriptWorker.tsWorker as unknown as WorkerShape
 
 const bundleWorkerProgram = new Worker(
   new URL("./worker/bundle.ts", import.meta.url),
@@ -83,7 +73,7 @@ const bundleWorker = Comlink.wrap(bundleWorkerProgram) as BundleWorker
 
 const sync = new Sync({
   signer: WebCryptoSigner.setup(),
-  storage: IndexedDbStorage.setup(indexedDB, "playground"),
+  storage: IndexedDbStorage.setup(indexedDB, "slaygrounds"),
   servers: ["wss://galaxy.observer"],
 })
 
@@ -213,10 +203,20 @@ async function update() {
 }
 update()
 
+// the language server reads every file in the project, not just open ones
+let projectTimer = setTimeout(() => {})
+function sendProject() {
+  clearTimeout(projectTimer)
+  projectTimer = setTimeout(() => {
+    typescript.project(handle!.url, handle!.doc())
+  }, 100)
+}
+
 let timer = setTimeout(() => {})
 function updateSoon() {
   clearTimeout(timer)
   timer = setTimeout(update, 250)
+  sendProject()
 }
 handle.on("change", updateSoon)
 
@@ -243,8 +243,7 @@ function del(obj: any, path: (string | number)[]): void {
   set(obj, path, undefined)
 }
 
-await codemirrorTsWorker.initialize()
-typescriptWorker.load(handle.url, handle.doc().src)
+typescript.project(handle.url, handle.doc())
 
 const map = {
   js: javascriptLanguage,
@@ -338,28 +337,12 @@ function createView(opts: { handle: Handle<Project>; path: string[] }) {
     })
   }
 
-  const tsExtensions: Extension[] = [
-    tsFacet.of({
-      worker: codemirrorTsWorker,
-      path: ["", opts.handle.url, ...opts.path.slice(1)].join("/"),
-    }),
-    autocompletion({ override: [tsAutocomplete()] }),
-    tsSync(),
-    tsGoto({
-      gotoHandler(path, hover, view) {
-        const fileName = hover.typeDef?.[0]?.fileName
-        if (fileName?.startsWith("/automerge:")) {
-          location.hash = fileName.slice(1)
-        }
-        return undefined
-      },
-    }),
-    tsHover(),
-    tsTwoslash(),
-    tsLinter(),
-  ]
-
   const filename = opts.path[opts.path.length - 1]
+  const name = opts.path.slice(1).join("/")
+  const tsExtensions: Extension = typescript.client.plugin(
+    fileUri(opts.handle.url, name),
+    languageId(filename),
+  )
 
   const ext = filename.split(".")?.[1] as keyof typeof map | undefined
   const lang = ext && map[ext]
@@ -426,6 +409,7 @@ async function postbrowse() {
     handle?.off("change", updateSoon)
     handle = await sync.find<Project>(automergeUrl)
     handle.on("change", updateSoon)
+    typescript.project(handle.url, handle.doc())
   }
   path = getPathFromURL(url)
 

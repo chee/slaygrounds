@@ -387,7 +387,8 @@ export function createMemFS() {
     },
     writeStdin(bytes: Uint8Array) {
       stdin.push(bytes)
-      waiting?.()
+      // never call back into go while go might be on the stack
+      queueMicrotask(() => waiting?.())
     },
     onStdout(fn: (bytes: Uint8Array) => void) {
       stdout = fn
